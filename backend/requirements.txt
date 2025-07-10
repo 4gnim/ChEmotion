@@ -1,0 +1,9 @@
+Flask
+pytesseract
+Pillow
+tensorflow
+scikit-learn
+numpy
+nltk
+Sastrawi
+flask-cors
