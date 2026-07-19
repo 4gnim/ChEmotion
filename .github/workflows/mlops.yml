@@ -1,0 +1,38 @@
+name: MLOps CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main", "master"]
+    # Robot hanya akan berjalan jika ada perubahan di folder backend
+    # Menghemat resource jika nanti mengedit Flutter-nya
+    paths:
+      - "backend/**"
+      - ".github/workflows/**"
+
+jobs:
+  build-and-deploy:
+    name: Build & Push ML Container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and Push ML Docker Image
+        run: |
+          IMAGE_NAME="chemotion-backend"
+
+          # Masuk ke folder backend karena Dockerfile ada di sana
+          cd backend
+
+          # Build Docker Image
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/$IMAGE_NAME:latest .
+
+          # Push Docker Image ke Docker Hub
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/$IMAGE_NAME:latest
